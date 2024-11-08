@@ -70,7 +70,7 @@ def CheckWinorDraw(grid, player):
             return player
 
     coup = get_PossibleCoup(grid)
-    if len(coup) == 0: return -1
+    if len(coup) == 0: return -3
 
     return -2
 
@@ -95,7 +95,7 @@ def CheckWinLoseDraw(grid):
             return 1
 
     coup = get_PossibleCoup(grid)
-    if len(coup) == 0: return -1
+    if len(coup) == 0: return -3
 
     return -2
 
@@ -121,8 +121,8 @@ class MCTS:
         depth = 0
         while 1:
 
-            if node.winner != -2:
-                return node, depth
+            #if node.winner != -2:
+            #    return node, depth
 
             if len(node.child) == 0:
                 coup = node.get_PossibleCoup()
@@ -185,10 +185,10 @@ class MCTS:
 
         while par != None:
             par.n+=1
-            if won == -1:
+            if won == -3:
                 par.score += 1
             elif won == par.player:
-                par.score += 3
+                par.score += 1
             #else:
             #    par.score -= 1
 
@@ -212,6 +212,10 @@ class MCTS:
         num = 0
         maxscore = -float('inf')
         for i in range(len(root.child)):
+
+            if root.child[i].winner == self.player:
+                print('return winner')
+                return root.child[i].num
             
             score = root.child[i].n
 
@@ -307,25 +311,25 @@ class TicTac:
             if self.player == 0:
                 self.p1.grid = self.get_Grid()
                 num = 0
-                if TURN == 0:
-                    coup = self.get_PossibleCoup()
-                    num = coup[random.randint(0, len(coup)-1)]
-                else:
-                    num = self.p1.Play(0.1)
+                #if TURN == 0:
+                #    coup = self.get_PossibleCoup()
+                #    num = coup[random.randint(0, len(coup)-1)]
+                #else:
+                num = self.p1.Play(0.1)
                 self.grid[num] = 0
-                print('p1=', self.grid)
+                print(num, 'p1=', self.grid)
                 self.play(fen, num, 'circle')
                 self.player = self.player^1
             else:
                 self.p2.grid = self.get_Grid()
                 num = 0
-                if TURN == 0:
-                    coup = self.get_PossibleCoup()
-                    num = coup[random.randint(0, len(coup)-1)]
-                else:
-                    num = self.p2.Play(0.1)
+                #if TURN == 0:
+                #    coup = self.get_PossibleCoup()
+                #    num = coup[random.randint(0, len(coup)-1)]
+                #else:
+                num = self.p2.Play(0.1)
                 self.grid[num] = 1
-                print('p2=', self.grid)
+                print(num, 'p2=', self.grid)
                 self.play(fen, num, 'cross')
                 self.player = self.player^1
 
@@ -345,6 +349,7 @@ class TicTac:
             self.p2 = MCTS(1, 0.6)
             self.startp = self.startp ^ 1
             self.player = self.startp
+            print("------------------------------------")
             TURN = 0
         
 
